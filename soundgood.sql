@@ -43,7 +43,6 @@ CREATE TABLE student (
  student_id SERIAL NOT NULL,
  person_number VARCHAR(12) NOT NULL UNIQUE,
  name VARCHAR(100) NOT NULL,
- age INT NOT NULL,
  street VARCHAR(100) NOT NULL,
  zip VARCHAR(5) NOT NULL,
  city VARCHAR(100) NOT NULL
@@ -96,7 +95,8 @@ CREATE TABLE lesson (
  genre VARCHAR(200),
  instrument_type VARCHAR(200),
  min_students INT,
- max_students INT
+ max_students INT,
+ student_amount INT
 );
 
 ALTER TABLE lesson ADD CONSTRAINT PK_lesson PRIMARY KEY (lesson_id);
@@ -122,12 +122,12 @@ CREATE TABLE rental (
 ALTER TABLE rental ADD CONSTRAINT PK_rental PRIMARY KEY (rental_id);
 
 
-CREATE TABLE sibling_personal_number (
- student_id SERIAL NOT NULL,
- sibling_student_id VARCHAR(12) NOT NULL
+CREATE TABLE sibling (
+    student_id INT NOT NULL,
+    sibling_student_id INT NOT NULL
 );
 
-ALTER TABLE sibling_personal_number ADD CONSTRAINT PK_sibling_personal_number PRIMARY KEY (student_id,sibling_student_id);
+ALTER TABLE sibling ADD CONSTRAINT PK_sibling PRIMARY KEY (student_id,sibling_student_id);
 
 
 CREATE TABLE student_lesson (
@@ -137,33 +137,25 @@ CREATE TABLE student_lesson (
 
 ALTER TABLE student_lesson ADD CONSTRAINT PK_student_lesson PRIMARY KEY (student_id,lesson_id);
 
-
 ALTER TABLE available_at ADD CONSTRAINT FK_available_at_0 FOREIGN KEY (instructor_id) REFERENCES instructor (instructor_id) ON DELETE CASCADE;
-
 
 ALTER TABLE can_teach ADD CONSTRAINT FK_can_teach_0 FOREIGN KEY (instructor_id) REFERENCES instructor (instructor_id) ON DELETE CASCADE;
 ALTER TABLE can_teach ADD CONSTRAINT FK_can_teach_1 FOREIGN KEY (instrument_id) REFERENCES instrument (instrument_id) ON DELETE CASCADE;
 
-
 ALTER TABLE contact_person ADD CONSTRAINT FK_contact_person_0 FOREIGN KEY (student_id) REFERENCES student (student_id) ON DELETE CASCADE;
 
-
 ALTER TABLE email ADD CONSTRAINT FK_email_0 FOREIGN KEY (student_id) REFERENCES student (student_id) ON DELETE CASCADE;
-
 
 ALTER TABLE lesson ADD CONSTRAINT FK_lesson_0 FOREIGN KEY (pricing_scheme_id) REFERENCES pricing_scheme (pricing_scheme_id) ON DELETE SET NULL;
 ALTER TABLE lesson ADD CONSTRAINT FK_lesson_1 FOREIGN KEY (instructor_id) REFERENCES instructor (instructor_id) ON DELETE SET NULL;
 
-
 ALTER TABLE phone ADD CONSTRAINT FK_phone_0 FOREIGN KEY (student_id) REFERENCES student (student_id) ON DELETE CASCADE;
 
+ALTER TABLE sibling ADD CONSTRAINT FK_sibling_0 FOREIGN KEY (student_id) REFERENCES student (student_id) ON DELETE CASCADE;
+ALTER TABLE sibling ADD CONSTRAINT FK_sibling_1 FOREIGN KEY (sibling_student_id) REFERENCES student (student_id) ON DELETE CASCADE;
 
 ALTER TABLE rental ADD CONSTRAINT FK_rental_0 FOREIGN KEY (student_id) REFERENCES student (student_id) ON DELETE CASCADE;
 ALTER TABLE rental ADD CONSTRAINT FK_rental_1 FOREIGN KEY (instrument_id) REFERENCES instrument (instrument_id) ON DELETE SET NULL;
-
-
-ALTER TABLE sibling_personal_number ADD CONSTRAINT FK_sibling_personal_number_0 FOREIGN KEY (student_id) REFERENCES student (student_id) ON DELETE CASCADE;
-
 
 ALTER TABLE student_lesson ADD CONSTRAINT FK_student_lesson_0 FOREIGN KEY (student_id) REFERENCES lesson (lesson_id) ON DELETE CASCADE;
 ALTER TABLE student_lesson ADD CONSTRAINT FK_student_lesson_1 FOREIGN KEY (lesson_id) REFERENCES student (student_id) ON DELETE CASCADE;
